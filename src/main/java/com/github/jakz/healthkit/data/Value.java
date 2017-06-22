@@ -7,15 +7,19 @@ public class Value
   
   public Value(Unit unit, float value)
   {
+    if (unit.defaultValueType() != Float.class)
+      throw new IllegalArgumentException();
+    
     this.unit = unit;
-    assert(unit.defaultValueType() == Float.class);
     this.value = new Float(value);
   }
   
   public Value(Unit unit, int value)
   {
+    if (unit.defaultValueType() != Integer.class)
+      throw new IllegalArgumentException();
+    
     this.unit = unit;
-    assert(unit.defaultValueType() == Integer.class);
     this.value = new Integer(value);
   }
   

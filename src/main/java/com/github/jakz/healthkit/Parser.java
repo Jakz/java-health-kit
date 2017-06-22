@@ -23,7 +23,9 @@ import com.github.jakz.healthkit.data.SampleSet;
 import com.github.jakz.healthkit.data.SampleType;
 import com.github.jakz.healthkit.data.Sex;
 import com.github.jakz.healthkit.data.SkinType;
+import com.github.jakz.healthkit.data.Source;
 import com.github.jakz.healthkit.data.StandardUnit;
+import com.github.jakz.healthkit.data.Timestamp;
 import com.github.jakz.healthkit.data.Unit;
 import com.pixbits.lib.io.xml.XMLHandler;
 import com.pixbits.lib.io.xml.XMLParser;
@@ -103,17 +105,16 @@ public class Parser extends XMLHandler<SampleSet>
       ZonedDateTime endDate = parseDate(stringEndDate);
       ZonedDateTime creationDate = stringCreationDate != null ? parseDate(stringCreationDate) : null;
       
-      sample.start(startDate);
-      sample.end(endDate);
-      if (creationDate != null)
-        sample.creation(creationDate);
+      sample.timestamp(new Timestamp(startDate, endDate, creationDate));
       
       /* parse source data fields */
       if (parseOptionalFields)
       { 
-        sample.sourceName(attrString("sourceName"));
-        attrStringIfPresent("sourceVersion", v -> sample.sourceVersion(v));
-        attrStringIfPresent("device", v -> sample.device(v));
+        sample.source(new Source(
+          attrString("sourceName"),
+          attrStringOptional("sourceVersion"),
+          attrStringOptional("device")
+        ));
       }
     }
     else if (name.equals("ExportDate"))

@@ -26,8 +26,8 @@ public class SampleTable extends JTable
     model = new TableModel<>(this, data);
     
     ColumnSpec<Sample, ?> typeColumn = new ColumnSpec<>("Type", String.class, s -> s.type().description);
-    ColumnSpec<Sample, ?> startDate = new ColumnSpec<>("Start", ZonedDateTime.class, s -> s.start());
-    ColumnSpec<Sample, ?> endDate = new ColumnSpec<>("End", ZonedDateTime.class, s -> s.end());
+    ColumnSpec<Sample, ?> startDate = new ColumnSpec<>("Start", ZonedDateTime.class, s -> s.timestamp().start());
+    ColumnSpec<Sample, ?> endDate = new ColumnSpec<>("End", ZonedDateTime.class, s -> s.timestamp().end());
     ColumnSpec<Sample, ?> value = new ColumnSpec<>("Value", Value.class, s -> s.value());
 
     startDate.setRenderer(new LambdaLabelTableRenderer<ZonedDateTime>((s, l) -> l.setText(dateFormatter.format(s))));

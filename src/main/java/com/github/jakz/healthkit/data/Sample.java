@@ -6,16 +6,11 @@ import java.util.List;
 
 public class Sample
 {
-  private ZonedDateTime start;
-  private ZonedDateTime end;
-  private ZonedDateTime creation;
-  
   private SampleType type;
   private Value value;
+  private Timestamp timestamp;
   
-  private String sourceName;
-  private String sourceVersion;
-  private String device;
+  private Source source;
   
   private List<Metadata> metadata;
   
@@ -30,24 +25,12 @@ public class Sample
   public Value value() { return value; }
   public void value(Value value) { this.value = value; }
   
-  public ZonedDateTime start() { return start; }
-  public void start(ZonedDateTime start) { this.start = start; }
+  public Timestamp timestamp() { return timestamp; }
+  public void timestamp(Timestamp timestamp) { this.timestamp = timestamp; }
   
-  public ZonedDateTime end() { return end; }
-  public void end(ZonedDateTime end) { this.end = end; }
-  
-  public ZonedDateTime creation() { return creation; }
-  public void creation(ZonedDateTime creation) { this.creation = creation; }
-  
-  public String sourceName() { return sourceName; }
-  public void sourceName(String sourceName) { this.sourceName = sourceName; }
-  
-  public String sourceVersion() { return sourceVersion; }
-  public void sourceVersion(String sourceVersion) { this.sourceVersion = sourceVersion; }
-  
-  public String device() { return device; }
-  public void device(String device) { this.device = device; }
-  
+  public Source source() { return source; }
+  public void source(Source source) { this.source = source; }
+
   public int metadataCount() { return metadata == null ? 0 : metadata.size(); }
   
   public void metadata(Metadata metadata)
