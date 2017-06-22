@@ -2,6 +2,10 @@ package com.github.jakz.healthkit.data;
 
 import java.time.LocalDate;
 
+import com.github.jakz.healthkit.data.constants.BloodType;
+import com.github.jakz.healthkit.data.constants.Sex;
+import com.github.jakz.healthkit.data.constants.SkinType;
+
 public class Me
 {
   private LocalDate birth;

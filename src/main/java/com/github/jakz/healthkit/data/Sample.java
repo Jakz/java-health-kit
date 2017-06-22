@@ -4,6 +4,8 @@ import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.github.jakz.healthkit.data.constants.SampleType;
+
 public class Sample
 {
   private SampleType type;

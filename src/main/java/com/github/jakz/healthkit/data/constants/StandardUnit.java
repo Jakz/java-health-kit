@@ -1,7 +1,10 @@
-package com.github.jakz.healthkit.data;
+package com.github.jakz.healthkit.data.constants;
 
 import java.util.HashMap;
 import java.util.Map;
+
+import com.github.jakz.healthkit.data.Unit;
+import com.github.jakz.healthkit.data.Value;
 
 public enum StandardUnit implements Unit
 {

@@ -1,4 +1,4 @@
-package com.github.jakz.healthkit.data;
+package com.github.jakz.healthkit.data.constants;
 
 import java.util.HashMap;
 import java.util.Map;
