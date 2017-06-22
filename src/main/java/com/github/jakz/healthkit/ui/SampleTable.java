@@ -35,5 +35,7 @@ public class SampleTable extends JTable
     model.addColumn(typeColumn);
     model.addColumn(startDate);
     model.addColumn(endDate);
+    
+    this.setAutoCreateRowSorter(true);
   }
 }

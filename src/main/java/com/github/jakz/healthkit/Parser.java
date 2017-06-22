@@ -1,10 +1,12 @@
 package com.github.jakz.healthkit;
 
+import java.time.LocalDate;
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 import java.util.Set;
@@ -13,13 +15,19 @@ import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
 import org.xml.sax.helpers.DefaultHandler;
 
+import com.github.jakz.healthkit.data.BloodType;
+import com.github.jakz.healthkit.data.Me;
+import com.github.jakz.healthkit.data.Metadata;
 import com.github.jakz.healthkit.data.Sample;
 import com.github.jakz.healthkit.data.SampleSet;
 import com.github.jakz.healthkit.data.SampleType;
+import com.github.jakz.healthkit.data.Sex;
+import com.github.jakz.healthkit.data.SkinType;
 import com.github.jakz.healthkit.data.StandardUnit;
 import com.github.jakz.healthkit.data.Unit;
 import com.pixbits.lib.io.xml.XMLHandler;
 import com.pixbits.lib.io.xml.XMLParser;
+import com.pixbits.lib.lang.Pair;
 
 public class Parser extends XMLHandler<SampleSet>
 {
@@ -31,14 +39,21 @@ public class Parser extends XMLHandler<SampleSet>
     RECORD
   }
   
+  boolean parseOptionalFields;
+  
   Status status;
   
+  ZonedDateTime exportDate;
   Locale locale;
+  
+  
   
   Set<String> keys = new HashSet<>();
   
   List<Sample> samples;
+  Me me;
   Sample sample;
+  Metadata metadata;
   
   @Override 
   protected void start(String ns, String name, Attributes attr) throws SAXException
@@ -69,6 +84,8 @@ public class Parser extends XMLHandler<SampleSet>
       type = SampleType.forKey(stringType);
       if (type == null)
         throw new InvalidDataException("Unknown record type: "+stringType);
+      sample.type(type);
+
 
       /* parse optonal unit */
       String stringUnit = attrStringOptional("unit");
@@ -86,9 +103,58 @@ public class Parser extends XMLHandler<SampleSet>
       ZonedDateTime endDate = parseDate(stringEndDate);
       ZonedDateTime creationDate = stringCreationDate != null ? parseDate(stringCreationDate) : null;
       
-      sample.type(type);
       sample.start(startDate);
       sample.end(endDate);
+      if (creationDate != null)
+        sample.creation(creationDate);
+      
+      /* parse source data fields */
+      if (parseOptionalFields)
+      { 
+        sample.sourceName(attrString("sourceName"));
+        attrStringIfPresent("sourceVersion", v -> sample.sourceVersion(v));
+        attrStringIfPresent("device", v -> sample.device(v));
+      }
+    }
+    else if (name.equals("ExportDate"))
+    {
+      exportDate = parseDate(attrString("value"));
+    }
+    else if (name.equals("Me"))
+    {
+      assert(me == null);
+      me = new Me();
+      
+      final String DATE_OF_BIRTH_KEY = "HKCharacteristicTypeIdentifierDateOfBirth";
+      final String SEX_KEY = "HKCharacteristicTypeIdentifierBiologicalSex";
+      final String BLOOD_TYPE_KEY = "HKCharacteristicTypeIdentifierBloodType";
+      final String SKIN_TYPE_KEY = "HKCharacteristicTypeIdentifierFitzpatrickSkinType";
+      
+      String birthString = attrString(DATE_OF_BIRTH_KEY);
+      Integer[] birthTokens = Arrays.stream(birthString.split("-"))
+          .map(s -> Integer.parseInt(s))
+          .toArray(i -> new Integer[i]);
+      me.birth(LocalDate.of(birthTokens[0], birthTokens[1], birthTokens[2]));
+      
+      me.sex(Sex.forKey(attrString(SEX_KEY)));
+      me.blood(BloodType.forKey(attrString(BLOOD_TYPE_KEY)));
+      me.skin(SkinType.forKey(attrString(SKIN_TYPE_KEY)));
+    }
+    else if (name.equals("MetadataEntry"))
+    {
+      assertTrue(metadata == null);
+      metadata = new Metadata(attrString("key"), attrString("value"));
+    }
+    else
+    {
+      Iterator<Pair<String,String>> it = attrIterator();
+      while (it.hasNext())
+      {
+        Pair<String,String> attribute = it.next();
+        System.err.println("Key: "+attribute.first+" Value: "+attribute.second);
+      }
+
+      throw new InvalidDataException("Unknown node name: "+name);
     }
   }
     
@@ -102,6 +168,15 @@ public class Parser extends XMLHandler<SampleSet>
       
       samples.add(sample);
       sample = null;
+    }
+    else if (name.equals("MetadataEntry"))
+    {
+      if (status == Status.RECORD)
+      {
+        assertTrue(sample != null);
+        sample.metadata(metadata);
+        metadata = null;
+      }
     }
   }
   
