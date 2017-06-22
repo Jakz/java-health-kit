@@ -1,5 +1,8 @@
 package com.github.jakz.healthkit;
 
+import java.time.ZoneOffset;
+import java.time.ZonedDateTime;
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Locale;
 import java.util.Set;
@@ -61,9 +64,21 @@ public class Parser extends XMLHandler<Void>
       String stringUnit = attrStringOptional("unit");
       if (stringUnit != null)
         unit = StandardUnit.forKey(stringUnit);
+      
+      /* parse dates
+         startDate, endDate required
+         creationDate optional */
+      String stringStartDate = attrString("startDate");
+      String stringEndDate = attrString("endDate");
+      String stringCreationDate = attrStringOptional("creationDate");
+      
+      ZonedDateTime startDate = parseDate(stringStartDate);
+      ZonedDateTime endDate = parseDate(stringEndDate);
+      ZonedDateTime creationDate = stringCreationDate != null ? parseDate(stringCreationDate) : null;
+
     }
   }
-  
+    
   @Override 
   protected void end(String ns, String name) throws SAXException
   {
@@ -88,6 +103,34 @@ public class Parser extends XMLHandler<Void>
     return null;
   }
 
+  protected ZonedDateTime parseDate(String value)
+  {
+    String[] tokens = value.split(" ");
+    
+    try
+    {
+      assertTrue(tokens.length == 3);
+      Integer[] day = Arrays.stream(tokens[0].split("-"))
+        .map(s -> Integer.parseInt(s))
+        .toArray(i -> new Integer[3]);
+      
+      assertTrue(day.length == 3);
+      
+      Integer[] hour = Arrays.stream(tokens[1].split(":"))
+        .map(s -> Integer.parseInt(s))
+        .toArray(i -> new Integer[3]);
+      
+      int zone = Integer.parseInt(tokens[2]);
+      int zoneHours = zone / 100;
+      int zoneMinutes = zone % 100;
+      
+      return ZonedDateTime.of(day[0], day[1], day[2], hour[0], hour[1], hour[2], 0, ZoneOffset.ofHoursMinutes(zoneHours, zoneMinutes));
+    }
+    catch (NumberFormatException|SAXException e)
+    {
+      throw new InvalidDataException("Error while parsing date '"+value+"'");
+    }
+  }
 
 
 }

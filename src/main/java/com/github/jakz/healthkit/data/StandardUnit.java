@@ -11,8 +11,7 @@ public enum StandardUnit implements Unit
   KM("km"),
   COUNT_MINUTES("count/min"),
   MINUTES("min"),
-  COUNT("count")
-   
+  COUNT("count")  
   ;
   
   private StandardUnit(String key)

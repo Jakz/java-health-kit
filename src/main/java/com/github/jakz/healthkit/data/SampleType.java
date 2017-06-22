@@ -25,12 +25,16 @@ public enum SampleType
  
   ;
   
-  private SampleType(String key)
+  private SampleType(String key) { this(key, key); }
+  
+  private SampleType(String key, String description)
   {
     this.key = key;
+    this.description = description;
   }
   
   public final String key;
+  public final String description;
   
   private static final Map<String, SampleType> mapping = new HashMap<>();
   
