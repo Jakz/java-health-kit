@@ -2,8 +2,10 @@ package com.github.jakz.healthkit;
 
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Locale;
 import java.util.Set;
 
@@ -11,13 +13,15 @@ import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
 import org.xml.sax.helpers.DefaultHandler;
 
+import com.github.jakz.healthkit.data.Sample;
+import com.github.jakz.healthkit.data.SampleSet;
 import com.github.jakz.healthkit.data.SampleType;
 import com.github.jakz.healthkit.data.StandardUnit;
 import com.github.jakz.healthkit.data.Unit;
 import com.pixbits.lib.io.xml.XMLHandler;
 import com.pixbits.lib.io.xml.XMLParser;
 
-public class Parser extends XMLHandler<Void>
+public class Parser extends XMLHandler<SampleSet>
 {
   enum Status
   {
@@ -32,6 +36,9 @@ public class Parser extends XMLHandler<Void>
   Locale locale;
   
   Set<String> keys = new HashSet<>();
+  
+  List<Sample> samples;
+  Sample sample;
   
   @Override 
   protected void start(String ns, String name, Attributes attr) throws SAXException
@@ -49,6 +56,9 @@ public class Parser extends XMLHandler<Void>
     }
     else if (name.equals("Record"))
     {
+      assertTrue(sample == null);
+      sample = new Sample();
+      
       status = Status.RECORD;
       String stringType = attrString("type");
       
@@ -75,7 +85,10 @@ public class Parser extends XMLHandler<Void>
       ZonedDateTime startDate = parseDate(stringStartDate);
       ZonedDateTime endDate = parseDate(stringEndDate);
       ZonedDateTime creationDate = stringCreationDate != null ? parseDate(stringCreationDate) : null;
-
+      
+      sample.type(type);
+      sample.start(startDate);
+      sample.end(endDate);
     }
   }
     
@@ -85,6 +98,10 @@ public class Parser extends XMLHandler<Void>
     if (name.equals("Record"))
     {
       status = Status.HEALTH_DATA;
+      assert(sample != null);
+      
+      samples.add(sample);
+      sample = null;
     }
   }
   
@@ -92,15 +109,18 @@ public class Parser extends XMLHandler<Void>
   protected void init()
   {
     status = Status.ROOT;
+    
+    sample = null;
+    samples = new ArrayList<>();
   }
 
   @Override
-  public Void get()
+  public SampleSet get()
   {
     for (String key : keys)
       System.out.println("Key: "+key);
     
-    return null;
+    return new SampleSet(samples);
   }
 
   protected ZonedDateTime parseDate(String value)
