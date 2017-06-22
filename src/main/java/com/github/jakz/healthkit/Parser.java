@@ -87,10 +87,10 @@ public class Parser extends XMLHandler<SampleSet>
       sample.type(type);
 
 
-      /* parse optonal unit */
+      /* parse optonal value */
       String stringUnit = attrStringOptional("unit");
       if (stringUnit != null)
-        unit = StandardUnit.forKey(stringUnit);
+        sample.value(StandardUnit.forKey(stringUnit).parseValue(attrString("value")));
       
       /* parse dates
          startDate, endDate required

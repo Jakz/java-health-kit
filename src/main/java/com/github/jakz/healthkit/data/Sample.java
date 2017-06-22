@@ -11,7 +11,7 @@ public class Sample
   private ZonedDateTime creation;
   
   private SampleType type;
-  private Unit unit;
+  private Value value;
   
   private String sourceName;
   private String sourceVersion;
@@ -27,8 +27,8 @@ public class Sample
   public SampleType type() { return type; }
   public void type(SampleType type) { this.type = type; }
   
-  public Unit unit() { return unit; }
-  public void unit(Unit unit) { this.unit = unit; }
+  public Value value() { return value; }
+  public void value(Value value) { this.value = value; }
   
   public ZonedDateTime start() { return start; }
   public void start(ZonedDateTime start) { this.start = start; }
