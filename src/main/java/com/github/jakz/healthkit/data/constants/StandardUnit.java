@@ -3,6 +3,7 @@ package com.github.jakz.healthkit.data.constants;
 import java.util.HashMap;
 import java.util.Map;
 
+import com.github.jakz.healthkit.InvalidDataException;
 import com.github.jakz.healthkit.data.Unit;
 import com.github.jakz.healthkit.data.Value;
 
@@ -13,7 +14,8 @@ public enum StandardUnit implements Unit
   KG("kg", Float.class),
   KM("km", Float.class),
   COUNT_MINUTES("count/min", Integer.class),
-  MINUTES("min", Integer.class),
+  MINUTES("min", Float.class),
+  HOURS("hour", Integer.class),
   COUNT("count", Integer.class)  
   ;
   
@@ -35,12 +37,20 @@ public enum StandardUnit implements Unit
   @Override
   public Value parseValue(String value)
   {
-    if (defaultType == Integer.class)
-      return new Value(this, Integer.parseInt(value));
-    else if (defaultType == Float.class)
-      return new Value(this, Float.parseFloat(value));
-    else
-      throw new IllegalArgumentException();
+    try
+    {
+      if (defaultType == Integer.class)
+        return new Value(this, Integer.parseInt(value));
+      else if (defaultType == Float.class)
+        return new Value(this, Float.parseFloat(value));
+      else
+        throw new IllegalArgumentException();
+    }
+    catch (NumberFormatException e)
+    {
+      throw new InvalidDataException("Error parsing value for unit "+key+" ("+defaultType.getSimpleName()+") for value "+value);
+    }
+
   }
   
   @Override

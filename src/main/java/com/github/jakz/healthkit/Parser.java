@@ -15,6 +15,7 @@ import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
 import org.xml.sax.helpers.DefaultHandler;
 
+import com.github.jakz.healthkit.data.ActivitySummary;
 import com.github.jakz.healthkit.data.Me;
 import com.github.jakz.healthkit.data.Metadata;
 import com.github.jakz.healthkit.data.Sample;
@@ -22,11 +23,15 @@ import com.github.jakz.healthkit.data.SampleSet;
 import com.github.jakz.healthkit.data.Source;
 import com.github.jakz.healthkit.data.Timestamp;
 import com.github.jakz.healthkit.data.Unit;
+import com.github.jakz.healthkit.data.Value;
+import com.github.jakz.healthkit.data.Workout;
+import com.github.jakz.healthkit.data.WorkoutEvent;
 import com.github.jakz.healthkit.data.constants.BloodType;
 import com.github.jakz.healthkit.data.constants.SampleType;
 import com.github.jakz.healthkit.data.constants.Sex;
 import com.github.jakz.healthkit.data.constants.SkinType;
 import com.github.jakz.healthkit.data.constants.StandardUnit;
+import com.github.jakz.healthkit.data.constants.WorkoutEventType;
 import com.pixbits.lib.io.xml.XMLHandler;
 import com.pixbits.lib.io.xml.XMLParser;
 import com.pixbits.lib.lang.Pair;
@@ -38,7 +43,8 @@ public class Parser extends XMLHandler<SampleSet>
     ROOT,
     HEALTH_DATA,
     
-    RECORD
+    RECORD,
+    WORKOUT
   }
   
   boolean parseOptionalFields;
@@ -53,8 +59,13 @@ public class Parser extends XMLHandler<SampleSet>
   Set<String> keys = new HashSet<>();
   
   List<Sample> samples;
+  List<Workout> workouts;
+  
   Me me;
+  
   Sample sample;
+  Workout workout;
+  
   Metadata metadata;
   
   @Override 
@@ -90,32 +101,16 @@ public class Parser extends XMLHandler<SampleSet>
 
 
       /* parse optonal value */
-      String stringUnit = attrStringOptional("unit");
-      if (stringUnit != null)
-        sample.value(StandardUnit.forKey(stringUnit).parseValue(attrString("value")));
-      
+      sample.value(parseValue("unit", "value"));
+
       /* parse dates
          startDate, endDate required
          creationDate optional */
-      String stringStartDate = attrString("startDate");
-      String stringEndDate = attrString("endDate");
-      String stringCreationDate = attrStringOptional("creationDate");
-      
-      ZonedDateTime startDate = parseDate(stringStartDate);
-      ZonedDateTime endDate = parseDate(stringEndDate);
-      ZonedDateTime creationDate = stringCreationDate != null ? parseDate(stringCreationDate) : null;
-      
-      sample.timestamp(new Timestamp(startDate, endDate, creationDate));
+      sample.timestamp(parseTimestamp());
       
       /* parse source data fields */
       if (parseOptionalFields)
-      { 
-        sample.source(new Source(
-          attrString("sourceName"),
-          attrStringOptional("sourceVersion"),
-          attrStringOptional("device")
-        ));
-      }
+        workout.source(parseSource());
     }
     else if (name.equals("ExportDate"))
     {
@@ -131,12 +126,7 @@ public class Parser extends XMLHandler<SampleSet>
       final String BLOOD_TYPE_KEY = "HKCharacteristicTypeIdentifierBloodType";
       final String SKIN_TYPE_KEY = "HKCharacteristicTypeIdentifierFitzpatrickSkinType";
       
-      String birthString = attrString(DATE_OF_BIRTH_KEY);
-      Integer[] birthTokens = Arrays.stream(birthString.split("-"))
-          .map(s -> Integer.parseInt(s))
-          .toArray(i -> new Integer[i]);
-      me.birth(LocalDate.of(birthTokens[0], birthTokens[1], birthTokens[2]));
-      
+      me.birth(parseSimpleDate(attrString(DATE_OF_BIRTH_KEY)));
       me.sex(Sex.forKey(attrString(SEX_KEY)));
       me.blood(BloodType.forKey(attrString(BLOOD_TYPE_KEY)));
       me.skin(SkinType.forKey(attrString(SKIN_TYPE_KEY)));
@@ -145,6 +135,55 @@ public class Parser extends XMLHandler<SampleSet>
     {
       assertTrue(metadata == null);
       metadata = new Metadata(attrString("key"), attrString("value"));
+    }
+    else if (name.equals("Workout"))
+    {
+      assertTrue(workout == null);
+      status = Status.WORKOUT;
+      workout = new Workout();
+      
+      //TODO: workoutActivityType
+      
+      workout.duration(parseValue("durationUnit", "duration"));
+      workout.distance(parseValue("totalDistanceUnit", "totalDistance"));
+      workout.energyBurned(parseValue("totalEnergyBurnedUnit", "totalEnergyBurned"));
+      workout.timestamp(parseTimestamp());
+      
+      if (parseOptionalFields)
+        workout.source(parseSource());
+    }
+    else if (name.equals("WorkoutEvent"))
+    {
+      assertTrue(workout != null);
+      workout.event(new WorkoutEvent(
+        WorkoutEventType.forKey(attrString("type")),
+        parseDate(attrString("date"))
+      ));
+    }
+    else if (name.equals("ActivitySummary"))
+    {
+      String date = attrStringOptional("dateComponents");
+      
+      /*
+      ActivitySummary summary = new ActivitySummary(
+        date != null ? parseSimpleDate(date) : null,
+        
+      );
+      
+          <!ATTLIST ActivitySummary
+          dateComponents           CDATA #IMPLIED
+          activeEnergyBurned       CDATA #IMPLIED
+          activeEnergyBurnedGoal   CDATA #IMPLIED
+          activeEnergyBurnedUnit   CDATA #IMPLIED
+          appleExerciseTime        CDATA #IMPLIED
+          appleExerciseTimeGoal    CDATA #IMPLIED
+          appleStandHours          CDATA #IMPLIED
+          appleStandHoursGoal      CDATA #IMPLIED
+        >
+
+      */
+      
+      //TODO: add it somewhere
     }
     else
     {
@@ -164,11 +203,12 @@ public class Parser extends XMLHandler<SampleSet>
   {
     if (name.equals("Record"))
     {
-      status = Status.HEALTH_DATA;
-      assert(sample != null);
-      
+      assert(sample != null);   
       samples.add(sample);
       sample = null;
+      
+      status = Status.HEALTH_DATA;
+
     }
     else if (name.equals("MetadataEntry"))
     {
@@ -178,6 +218,22 @@ public class Parser extends XMLHandler<SampleSet>
         sample.metadata(metadata);
         metadata = null;
       }
+      else if (status == Status.WORKOUT)
+      {
+        assertTrue(workout != null);
+        workout.metadata(metadata);
+        metadata = null;
+      }
+      else
+        throw new InvalidDataException("Unknown parent node for MetadataEntry (status: "+status+")");
+    }
+    else if (name.equals("Workout"))
+    {
+      assertTrue(workout != null);
+      workouts.add(workout);
+      workout = null;
+      
+      status = Status.HEALTH_DATA;
     }
   }
   
@@ -186,8 +242,15 @@ public class Parser extends XMLHandler<SampleSet>
   {
     status = Status.ROOT;
     
+    locale = null;
+    exportDate = null;
+    me = null;
+    
     sample = null;
     samples = new ArrayList<>();
+    
+    workout = null;
+    workouts = new ArrayList<>();
   }
 
   @Override
@@ -226,6 +289,48 @@ public class Parser extends XMLHandler<SampleSet>
     {
       throw new InvalidDataException("Error while parsing date '"+value+"'");
     }
+  }
+
+  protected Value parseValue(String unitKey, String valueKey) throws SAXException
+  {
+    String stringUnit = attrStringOptional(unitKey);
+    if (stringUnit != null)
+      return StandardUnit.forKey(stringUnit).parseValue(attrString(valueKey));
+    else
+      return null;
+  }
+  
+  protected Source parseSource() throws SAXException
+  {
+    return new Source(
+        attrString("sourceName"),
+        attrStringOptional("sourceVersion"),
+        attrStringOptional("device")
+    );
+  }
+  
+  protected LocalDate parseSimpleDate(String value)
+  {
+    Integer[] birthTokens = Arrays.stream(value.split("-"))
+        .map(s -> Integer.parseInt(s))
+        .toArray(i -> new Integer[i]);
+    return LocalDate.of(birthTokens[0], birthTokens[1], birthTokens[2]);
+  }
+  
+  protected Timestamp parseTimestamp() throws SAXException
+  {
+    /* parse dates
+    startDate, endDate required
+    creationDate optional */
+    String stringStartDate = attrString("startDate");
+    String stringEndDate = attrString("endDate");
+    String stringCreationDate = attrStringOptional("creationDate");
+    
+    ZonedDateTime startDate = parseDate(stringStartDate);
+    ZonedDateTime endDate = parseDate(stringEndDate);
+    ZonedDateTime creationDate = stringCreationDate != null ? parseDate(stringCreationDate) : null;
+    
+    return new Timestamp(startDate, endDate, creationDate);
   }
 
 

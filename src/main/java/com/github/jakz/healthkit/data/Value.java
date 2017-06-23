@@ -2,8 +2,8 @@ package com.github.jakz.healthkit.data;
 
 public class Value
 {
-  private Unit unit;
-  private Number value;
+  protected Unit unit;
+  protected Number value;
   
   public Value(Unit unit, float value)
   {

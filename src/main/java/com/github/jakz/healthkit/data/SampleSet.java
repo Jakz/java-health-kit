@@ -10,7 +10,7 @@ public class SampleSet implements DataSource<Sample>
 {
   private List<Sample> allSamples;
   private List<Sample> samples;
-  
+    
   public SampleSet(List<Sample> samples)
   {
     allSamples = samples;
