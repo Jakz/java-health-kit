@@ -10,6 +10,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 import java.util.Set;
+import java.util.function.Predicate;
 
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
@@ -17,6 +18,7 @@ import org.xml.sax.helpers.DefaultHandler;
 
 import com.github.jakz.healthkit.data.ActivitySummary;
 import com.github.jakz.healthkit.data.DataSet;
+import com.github.jakz.healthkit.data.Filters;
 import com.github.jakz.healthkit.data.Me;
 import com.github.jakz.healthkit.data.Metadata;
 import com.github.jakz.healthkit.data.Sample;
@@ -215,7 +217,15 @@ public class Parser extends XMLHandler<DataSet>
     if (name.equals("Record"))
     {
       assert(sample != null);   
-      samples.add(sample);
+
+      /*LocalDate first = LocalDate.of(2017, 6, 1);
+      LocalDate last = LocalDate.of(2017, 6, 21);
+      Predicate<Sample> predicate = Filters.ofType(SampleType.QUANTITY_HEART_RATE).and(Filters.inDayRange(first, last));
+      
+      if (predicate.test(sample))
+        samples.add(sample);*/
+        
+      //samples.add(sample);
       sample = null;
       
       status = Status.HEALTH_DATA;

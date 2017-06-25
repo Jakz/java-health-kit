@@ -3,7 +3,7 @@ package com.github.jakz.healthkit.data;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Workout
+public class Workout implements Timed
 {
   private WorkoutType type;
   

@@ -6,7 +6,7 @@ import java.util.List;
 
 import com.github.jakz.healthkit.data.constants.SampleType;
 
-public class Sample
+public class Sample implements Timed
 {
   private SampleType type;
   private Value value;

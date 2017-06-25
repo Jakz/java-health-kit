@@ -35,8 +35,8 @@ public class WorkoutTable extends JTable
     ColumnSpec<Workout, ?> distance = new ColumnSpec<>("Distance", Value.class, s -> s.distance());
     ColumnSpec<Workout, ?> energy = new ColumnSpec<>("Energy Burned", Value.class, s -> s.energyBurned());
 
-    startDate.setRenderer(new LambdaLabelTableRenderer<ZonedDateTime>((s, l) -> l.setText(dateFormatter.format(s))));
-    endDate.setRenderer(new LambdaLabelTableRenderer<ZonedDateTime>((s, l) -> l.setText(dateFormatter.format(s))));
+    startDate.setRenderer(new LambdaLabelTableRenderer<ZonedDateTime>((s, l) -> l.setText(Formatters.startDate.format(s))));
+    endDate.setRenderer(new LambdaLabelTableRenderer<ZonedDateTime>((s, l) -> l.setText(Formatters.endDate.format(s))));
     
     TableCellRenderer valueRenderer = 
         new LambdaLabelTableRenderer<Value>((s, l) -> { if (s != null) l.setText(s.toString()); });

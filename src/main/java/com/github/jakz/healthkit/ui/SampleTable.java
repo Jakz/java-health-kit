@@ -33,13 +33,13 @@ public class SampleTable extends JTable
     ColumnSpec<Sample, ?> endDate = new ColumnSpec<>("End", ZonedDateTime.class, s -> s.timestamp().end());
     ColumnSpec<Sample, ?> value = new ColumnSpec<>("Value", Value.class, s -> s.value());
 
-    startDate.setRenderer(new LambdaLabelTableRenderer<ZonedDateTime>((s, l) -> l.setText(dateFormatter.format(s))));
-    endDate.setRenderer(new LambdaLabelTableRenderer<ZonedDateTime>((s, l) -> l.setText(dateFormatter.format(s))));
+    startDate.setRenderer(new LambdaLabelTableRenderer<ZonedDateTime>((s, l) -> l.setText(Formatters.startDate.format(s))));
+    endDate.setRenderer(new LambdaLabelTableRenderer<ZonedDateTime>((s, l) -> l.setText(Formatters.endDate.format(s))));
     value.setRenderer(new LambdaLabelTableRenderer<Value>((s, l) -> { 
       if (s != null)
       {
         if (s.unit().measureType() == Unit.Type.LENGTH)
-          l.setText(s.convert(StandardUnit.CM).toString());
+          l.setText(s.convert(StandardUnit.M).toString());
         else
           l.setText(s.toString());
       }
