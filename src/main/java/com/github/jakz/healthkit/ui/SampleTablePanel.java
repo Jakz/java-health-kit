@@ -5,13 +5,14 @@ import java.awt.Dimension;
 
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
+import javax.swing.JTable;
 
 public class SampleTablePanel extends JPanel
 {
-  private SampleTable table;
+  private JTable table;
   private JScrollPane scrollPane;
   
-  public SampleTablePanel(SampleTable table, Dimension dimension)
+  public SampleTablePanel(JTable table, Dimension dimension)
   {
     this.table = table;
     this.scrollPane = new JScrollPane(table);

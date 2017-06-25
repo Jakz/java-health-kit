@@ -16,6 +16,9 @@ public class Workout
   
   private List<WorkoutEvent> events;
   private List<Metadata> metadata;
+  
+  public void type(WorkoutType type) { this.type = type; }
+  public WorkoutType type() { return type; }
 
   public Value duration() { return duration; }
   public void duration(Value duration) { this.duration = duration; }

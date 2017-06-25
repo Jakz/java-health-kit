@@ -27,6 +27,7 @@ import com.github.jakz.healthkit.data.Unit;
 import com.github.jakz.healthkit.data.Value;
 import com.github.jakz.healthkit.data.Workout;
 import com.github.jakz.healthkit.data.WorkoutEvent;
+import com.github.jakz.healthkit.data.WorkoutType;
 import com.github.jakz.healthkit.data.constants.BloodType;
 import com.github.jakz.healthkit.data.constants.SampleType;
 import com.github.jakz.healthkit.data.constants.Sex;
@@ -71,7 +72,7 @@ public class Parser extends XMLHandler<DataSet>
   
   private boolean shouldSkip(boolean start)
   {
-    return false && samples.size() > (start ? 10000 : 10001);
+    return false && samples.size() > (start ? 100 : 101);
   }
   
   @Override 
@@ -149,9 +150,8 @@ public class Parser extends XMLHandler<DataSet>
       assertTrue(workout == null);
       status = Status.WORKOUT;
       workout = new Workout();
-      
-      //TODO: workoutActivityType
-      
+
+      workout.type(WorkoutType.forKey(attrString("workoutActivityType")));
       workout.duration(parseValue("durationUnit", "duration"));
       workout.distance(parseValue("totalDistanceUnit", "totalDistance"));
       workout.energyBurned(parseValue("totalEnergyBurnedUnit", "totalEnergyBurned"));

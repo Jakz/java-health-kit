@@ -23,9 +23,12 @@ public class Value
     this.value = new Integer(value);
   }
   
+  public Value convert(Unit unit) { return this.unit.convert(this, unit); }
+  
   public Unit unit() { return unit; }
  
   public Number value() { return value; }
+  public int ivalue() { return Math.round(value.floatValue()); }
   
   public String toString()
   {

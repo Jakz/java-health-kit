@@ -7,7 +7,9 @@ import javax.swing.JTable;
 
 import com.github.jakz.healthkit.data.Sample;
 import com.github.jakz.healthkit.data.SampleSet;
+import com.github.jakz.healthkit.data.Unit;
 import com.github.jakz.healthkit.data.Value;
+import com.github.jakz.healthkit.data.constants.StandardUnit;
 import com.pixbits.lib.ui.table.ColumnSpec;
 import com.pixbits.lib.ui.table.DataSource;
 import com.pixbits.lib.ui.table.TableModel;
@@ -33,7 +35,15 @@ public class SampleTable extends JTable
 
     startDate.setRenderer(new LambdaLabelTableRenderer<ZonedDateTime>((s, l) -> l.setText(dateFormatter.format(s))));
     endDate.setRenderer(new LambdaLabelTableRenderer<ZonedDateTime>((s, l) -> l.setText(dateFormatter.format(s))));
-    value.setRenderer(new LambdaLabelTableRenderer<Value>((s, l) -> { if (s != null) l.setText(s.toString()); } ));
+    value.setRenderer(new LambdaLabelTableRenderer<Value>((s, l) -> { 
+      if (s != null)
+      {
+        if (s.unit().measureType() == Unit.Type.LENGTH)
+          l.setText(s.convert(StandardUnit.CM).toString());
+        else
+          l.setText(s.toString());
+      }
+    } ));
     
     model.addColumn(typeColumn);
     model.addColumn(startDate);

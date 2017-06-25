@@ -22,6 +22,12 @@ public class DataSetStatsPanel extends JPanel
   
   public void refresh()
   {
-    label.setText(String.format("Samples: %d, workouts: %d", data.samplesCount(), data.workoutCount()));
+    int workoutEventCount = data.workoutStream().reduce(0, (c, w) -> w.eventCount(), (c,d) -> c+d);
+    
+    label.setText(String.format("Samples: %d, workouts: %d (%d)", 
+        data.sampleCount(), 
+        data.workoutCount(),
+        workoutEventCount
+    ));
   }
 }
