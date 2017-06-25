@@ -5,23 +5,23 @@ import java.util.Map;
 
 public enum SampleType
 {
-  QUANTITY_ACTIVE_ENERGY_BURNED("HKQuantityTypeIdentifierActiveEnergyBurned"),
-  QUANTITY_BASAL_ENERGY_BURNED("HKQuantityTypeIdentifierBasalEnergyBurned"),
-  QUANTITY_BODY_MASS("HKQuantityTypeIdentifierBodyMass"),
-  QUANTITY_FLIGHTS_CLIMBED("HKQuantityTypeIdentifierFlightsClimbed"),
-  QUANTITY_HEART_RATE("HKQuantityTypeIdentifierHeartRate"),
-  QUANTITY_STEP_COUNT("HKQuantityTypeIdentifierStepCount"),
+  QUANTITY_ACTIVE_ENERGY_BURNED("HKQuantityTypeIdentifierActiveEnergyBurned", "Energy Burned (Active)"),
+  QUANTITY_BASAL_ENERGY_BURNED("HKQuantityTypeIdentifierBasalEnergyBurned", "Energy Burned (Basal)"),
+  QUANTITY_BODY_MASS("HKQuantityTypeIdentifierBodyMass", "Body Mass"),
+  QUANTITY_FLIGHTS_CLIMBED("HKQuantityTypeIdentifierFlightsClimbed", "Flights Climbed"),
+  QUANTITY_HEART_RATE("HKQuantityTypeIdentifierHeartRate", "Heart Rate"),
+  QUANTITY_STEP_COUNT("HKQuantityTypeIdentifierStepCount", "Steps Count"),
   
-  QUANTITY_APPLE_EXERCISE_TIME("HKQuantityTypeIdentifierAppleExerciseTime"),
+  QUANTITY_APPLE_EXERCISE_TIME("HKQuantityTypeIdentifierAppleExerciseTime", "Apple Exercise Time"),
   
-  QUANTITY_DISTANCE_CYCLING("HKQuantityTypeIdentifierDistanceCycling"),
-  QUANTITY_DISTANCE_WALKING_RUNNING("HKQuantityTypeIdentifierDistanceWalkingRunning"),
+  QUANTITY_DISTANCE_CYCLING("HKQuantityTypeIdentifierDistanceCycling", "Distance (Cycling)"),
+  QUANTITY_DISTANCE_WALKING_RUNNING("HKQuantityTypeIdentifierDistanceWalkingRunning", "Distance (Walking/Running)"),
   
-  QUANTITY_HEIGHT("HKQuantityTypeIdentifierHeight"),
+  QUANTITY_HEIGHT("HKQuantityTypeIdentifierHeight", "Height"),
   
   
-  CATEGORY_APPLE_STAND_HOUR("HKCategoryTypeIdentifierAppleStandHour"),
-  CATEGORY_SLEEP_ANALYSIS("HKCategoryTypeIdentifierSleepAnalysis")
+  CATEGORY_APPLE_STAND_HOUR("HKCategoryTypeIdentifierAppleStandHour", "Apple Stand Hour"),
+  CATEGORY_SLEEP_ANALYSIS("HKCategoryTypeIdentifierSleepAnalysis", "Sleep Analysis")
  
   ;
   

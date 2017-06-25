@@ -8,19 +8,11 @@ import com.pixbits.lib.ui.table.DataSource;
 
 public class SampleSet implements DataSource<Sample>
 {
-  private List<Sample> allSamples;
   private List<Sample> samples;
     
   public SampleSet(List<Sample> samples)
   {
-    allSamples = samples;
     this.samples = samples;
-  }
-  
-  public SampleSet()
-  {
-    samples = new ArrayList<>();
-    allSamples = new ArrayList<>();
   }
   
   @Override

@@ -16,6 +16,7 @@ import org.xml.sax.SAXException;
 import org.xml.sax.helpers.DefaultHandler;
 
 import com.github.jakz.healthkit.data.ActivitySummary;
+import com.github.jakz.healthkit.data.DataSet;
 import com.github.jakz.healthkit.data.Me;
 import com.github.jakz.healthkit.data.Metadata;
 import com.github.jakz.healthkit.data.Sample;
@@ -36,7 +37,7 @@ import com.pixbits.lib.io.xml.XMLHandler;
 import com.pixbits.lib.io.xml.XMLParser;
 import com.pixbits.lib.lang.Pair;
 
-public class Parser extends XMLHandler<SampleSet>
+public class Parser extends XMLHandler<DataSet>
 {
   enum Status
   {
@@ -68,9 +69,16 @@ public class Parser extends XMLHandler<SampleSet>
   
   Metadata metadata;
   
+  private boolean shouldSkip(boolean start)
+  {
+    return false && samples.size() > (start ? 10000 : 10001);
+  }
+  
   @Override 
   protected void start(String ns, String name, Attributes attr) throws SAXException
   {
+    if (shouldSkip(true)) return;
+    
     if (name.equals("HealthData"))
     {
       if (status != Status.ROOT)
@@ -201,6 +209,9 @@ public class Parser extends XMLHandler<SampleSet>
   @Override 
   protected void end(String ns, String name) throws SAXException
   {
+    if (shouldSkip(true)) return;
+
+    
     if (name.equals("Record"))
     {
       assert(sample != null);   
@@ -254,12 +265,12 @@ public class Parser extends XMLHandler<SampleSet>
   }
 
   @Override
-  public SampleSet get()
+  public DataSet get()
   {
     for (String key : keys)
       System.out.println("Key: "+key);
     
-    return new SampleSet(samples);
+    return new DataSet(samples, workouts);
   }
 
   protected ZonedDateTime parseDate(String value)

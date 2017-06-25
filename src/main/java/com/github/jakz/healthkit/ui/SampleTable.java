@@ -9,18 +9,19 @@ import com.github.jakz.healthkit.data.Sample;
 import com.github.jakz.healthkit.data.SampleSet;
 import com.github.jakz.healthkit.data.Value;
 import com.pixbits.lib.ui.table.ColumnSpec;
+import com.pixbits.lib.ui.table.DataSource;
 import com.pixbits.lib.ui.table.TableModel;
 import com.pixbits.lib.ui.table.renderers.LambdaLabelTableRenderer;
 
 public class SampleTable extends JTable
 {
   TableModel<Sample> model;
-  SampleSet data;
+  DataSource<Sample> data;
   DateTimeFormatter dateFormatter;
   
-  public SampleTable(SampleSet data)
+  public SampleTable(DataSource<Sample> data)
   {
-    dateFormatter = DateTimeFormatter.ofPattern("dd/MM/yyyy - hh:mm:ss Z");
+    dateFormatter = DateTimeFormatter.ofPattern("dd/MM/yyyy - kk:mm:ss Z");
     
     this.data = data;
     model = new TableModel<>(this, data);
