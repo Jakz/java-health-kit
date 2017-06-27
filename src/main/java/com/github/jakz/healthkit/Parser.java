@@ -36,6 +36,7 @@ import com.github.jakz.healthkit.data.constants.Sex;
 import com.github.jakz.healthkit.data.constants.SkinType;
 import com.github.jakz.healthkit.data.constants.StandardUnit;
 import com.github.jakz.healthkit.data.constants.WorkoutEventType;
+import com.github.jakz.healthkit.exceptions.InvalidDataException;
 import com.pixbits.lib.io.xml.XMLHandler;
 import com.pixbits.lib.io.xml.XMLParser;
 import com.pixbits.lib.lang.Pair;

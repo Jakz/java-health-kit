@@ -1,4 +1,4 @@
-package com.github.jakz.healthkit.data;
+package com.github.jakz.healthkit.exceptions;
 
 public class InconvertibleUnitException extends RuntimeException
 {

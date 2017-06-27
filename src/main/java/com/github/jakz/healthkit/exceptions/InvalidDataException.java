@@ -1,4 +1,4 @@
-package com.github.jakz.healthkit;
+package com.github.jakz.healthkit.exceptions;
 
 public class InvalidDataException extends RuntimeException
 {

@@ -3,10 +3,10 @@ package com.github.jakz.healthkit.data.constants;
 import java.util.HashMap;
 import java.util.Map;
 
-import com.github.jakz.healthkit.InvalidDataException;
-import com.github.jakz.healthkit.data.InconvertibleUnitException;
 import com.github.jakz.healthkit.data.Unit;
 import com.github.jakz.healthkit.data.Value;
+import com.github.jakz.healthkit.exceptions.InconvertibleUnitException;
+import com.github.jakz.healthkit.exceptions.InvalidDataException;
 
 public enum StandardUnit implements Unit
 {
