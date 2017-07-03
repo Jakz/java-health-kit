@@ -226,7 +226,7 @@ public class Parser extends XMLHandler<DataSet>
       if (predicate.test(sample))
         samples.add(sample);*/
         
-      //samples.add(sample);
+      samples.add(sample);
       sample = null;
       
       status = Status.HEALTH_DATA;

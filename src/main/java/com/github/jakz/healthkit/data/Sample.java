@@ -5,8 +5,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.github.jakz.healthkit.data.constants.SampleType;
+import com.pixbits.lib.ui.charts.Measurable;
 
-public class Sample implements Timed
+public class Sample implements Timed, Measurable
 {
   private SampleType type;
   private Value value;
@@ -46,4 +47,5 @@ public class Sample implements Timed
     return metadata == null ? null : metadata.get(index);
   }
 
+  @Override public float chartValue() { return value.value.floatValue(); }
 }

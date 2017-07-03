@@ -34,5 +34,5 @@ public class Filters
     return t -> t.type().equals(type);
   }
   
- 
+  public static <T> Predicate<T> and(Predicate<T> p1, Predicate<T> p2) { return p1.and(p2); }
 }
