@@ -2,11 +2,13 @@ package com.github.jakz.healthkit.ui;
 
 import java.awt.BorderLayout;
 import java.awt.Dimension;
+import java.util.function.Predicate;
 
 import javax.swing.JPanel;
 import javax.swing.JTabbedPane;
 
 import com.github.jakz.healthkit.data.DataSet;
+import com.github.jakz.healthkit.data.Sample;
 
 public class DataSetPanel extends JPanel
 {
@@ -27,7 +29,7 @@ public class DataSetPanel extends JPanel
     
     workoutTable = new WorkoutTable(set.createDataSourceForWorkouts());
     SampleTablePanel workoutPanel = new SampleTablePanel(workoutTable, new Dimension(800,600));
-    
+
     statsPanel = new DataSetStatsPanel(set);
     
     tabs = new JTabbedPane();
@@ -37,5 +39,17 @@ public class DataSetPanel extends JPanel
     setLayout(new BorderLayout());
     add(tabs, BorderLayout.CENTER);
     add(statsPanel, BorderLayout.SOUTH);
+  }
+  
+  public void clearFilterForSamples()
+  { 
+    sampleTable.data.clearFilter();
+    sampleTable.refresh();
+  }
+  
+  public void filterSamples(Predicate<Sample> filter)
+  { 
+    sampleTable.data.filter(filter);
+    sampleTable.refresh();
   }
 }

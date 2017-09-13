@@ -7,9 +7,13 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.time.temporal.ChronoField;
 import java.util.List;
 import java.util.Random;
 import java.util.concurrent.ThreadLocalRandom;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -22,7 +26,7 @@ import com.github.jakz.healthkit.data.Value;
 import com.github.jakz.healthkit.data.constants.SampleType;
 import com.github.jakz.healthkit.data.constants.StandardUnit;
 import com.github.jakz.healthkit.ui.DataSetPanel;
-import com.pixbits.lib.io.MonitoredInputStream;
+import com.pixbits.lib.io.stream.MonitoredInputStream;
 import com.pixbits.lib.io.xml.XMLParser;
 import com.pixbits.lib.ui.UIUtils;
 import com.pixbits.lib.ui.WrapperFrame;
@@ -63,12 +67,12 @@ public class App
   {
     try
     {
-      if (true)
+      /*if (true)
       {
         List<Sample> samples = generateSampleSet(200, 100.0f, 170.0f);
         testChart(samples);
         return;
-      }
+      }*/
       
       UIUtils.setNimbusLNF();
 
@@ -77,13 +81,26 @@ public class App
       BufferedInputStream bis = new BufferedInputStream(Files.newInputStream(xmlPath));
       MonitoredInputStream mis = new MonitoredInputStream(bis);
       final long fileSize = Files.size(xmlPath);
-      ChangeListener listener = e -> System.out.println(((MonitoredInputStream)e.getSource()).location() / (float)fileSize);
-      mis.addChangeListener(listener);
+      /*ChangeListener listener = e -> System.out.println(((MonitoredInputStream)e.getSource()).location() / (float)fileSize);
+      mis.addChangeListener(listener);*/
             
       XMLParser<DataSet> parser = new XMLParser<>(new Parser());
       DataSet set = parser.load(mis);
       
-      WrapperFrame<?> frame = UIUtils.buildFrame(new DataSetPanel(set), "Sample Table");
+      Predicate<Sample> filter =           
+        Filters.and(
+            Filters.ofType(SampleType.QUANTITY_HEART_RATE),
+            Filters.onDay(LocalDate.of(2017, 8, 6))
+            /*Filters.and(
+                Filters.isAfter(LocalDateTime.of(2017, 7, 12, 19, 41)),
+                Filters.isBefore(LocalDateTime.of(2017, 7, 12, 20, 52))
+            )*/
+        );
+      
+      DataSetPanel dataSetPanel = new DataSetPanel(set);
+      dataSetPanel.filterSamples(filter);
+      
+      WrapperFrame<?> frame = UIUtils.buildFrame(dataSetPanel, "Sample Table");
       frame.exitOnClose();
       frame.setVisible(true);
       
@@ -91,12 +108,36 @@ public class App
           .filter(
               Filters.and(
                 Filters.ofType(SampleType.QUANTITY_HEART_RATE),
-                Filters.onDay(LocalDate.of(2017, 6, 21))
+                Filters.onDay(LocalDate.of(2017, 8, 6))
               )
           )
           .collect(Collectors.toList());
       
       testChart(filtered);
+      
+      List<Sample> fset = set.sampleStream().filter(filter).collect(Collectors.toList());
+      
+      int duration = 41*60 + 20;
+      LocalTime start = LocalTime.of(21, 34, 33);
+                
+      for (int i = 0; i < duration; i += 5)
+      {
+        LocalTime instant = start.plusSeconds(i);
+        int current = Integer.MAX_VALUE;
+        long min = Long.MAX_VALUE;
+        for (Sample s : fset)
+        {
+          long delta = Math.abs(instant.get(ChronoField.SECOND_OF_DAY) - s.timestamp().start().getLong(ChronoField.SECOND_OF_DAY));
+          if (delta < min || current == Integer.MAX_VALUE)
+          {
+            current = s.value().ivalue();
+            min = delta;
+          }
+        }
+        
+        System.out.println(current);
+      }
+
     }
     catch (Exception e)
     {

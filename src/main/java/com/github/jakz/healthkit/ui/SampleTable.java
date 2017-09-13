@@ -12,16 +12,17 @@ import com.github.jakz.healthkit.data.Value;
 import com.github.jakz.healthkit.data.constants.StandardUnit;
 import com.pixbits.lib.ui.table.ColumnSpec;
 import com.pixbits.lib.ui.table.DataSource;
+import com.pixbits.lib.ui.table.FilterableDataSource;
 import com.pixbits.lib.ui.table.TableModel;
 import com.pixbits.lib.ui.table.renderers.LambdaLabelTableRenderer;
 
 public class SampleTable extends JTable
 {
   TableModel<Sample> model;
-  DataSource<Sample> data;
+  FilterableDataSource<Sample> data;
   DateTimeFormatter dateFormatter;
   
-  public SampleTable(DataSource<Sample> data)
+  public SampleTable(FilterableDataSource<Sample> data)
   {
     dateFormatter = DateTimeFormatter.ofPattern("dd/MM/yyyy - kk:mm:ss Z");
     
@@ -51,5 +52,10 @@ public class SampleTable extends JTable
     model.addColumn(value);
     
     this.setAutoCreateRowSorter(true);
+  }
+  
+  void refresh()
+  {
+    model.fireTableDataChanged();
   }
 }

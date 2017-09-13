@@ -1,6 +1,7 @@
 package com.github.jakz.healthkit.data;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.function.Predicate;
 
@@ -16,6 +17,16 @@ public class Filters
   public static <T extends Timed> Predicate<T> onDay(LocalDate date)
   {
     return t -> onDayTimestamp(date).test(t.timestamp());
+  }
+  
+  public static <T extends Timed> Predicate<T> isAfter(LocalDateTime timestamp)
+  {
+    return t -> t.timestamp().start.isAfter(timestamp.atZone(t.timestamp().start.getZone()));
+  }
+  
+  public static <T extends Timed> Predicate<T> isBefore(LocalDateTime timestamp)
+  {
+    return t -> t.timestamp().start.isBefore(timestamp.atZone(t.timestamp().start.getZone()));
   }
  
   public static <T extends Timed> Predicate<T> inDayRange(LocalDate first, LocalDate last)
