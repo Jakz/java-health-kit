@@ -171,6 +171,10 @@ public class Parser extends XMLHandler<DataSet>
         parseDate(attrString("date"))
       ));
     }
+    else if (name.equals("WorkoutRoute") || name.equals("Location"))
+    {
+      //TODO: ignored for now
+    }
     else if (name.equals("ActivitySummary"))
     {
       String date = attrStringOptional("dateComponents");
