@@ -23,6 +23,8 @@ public enum StandardUnit implements Unit
   MINUTES("min", Unit.Type.TIME, Float.class, 1.0f),
   HOURS("hour", Unit.Type.TIME, Float.class, 1/60.0f),
   
+  ML_MIN_KG("mL/min·kg", Unit.Type.OXYGEN, Float.class, 1.0f),
+  
   COUNT("count", Unit.Type.AMOUNT, Integer.class, 1.0f)  
   ;
   

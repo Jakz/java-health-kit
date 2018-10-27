@@ -11,6 +11,7 @@ public enum SampleType
   QUANTITY_FLIGHTS_CLIMBED("HKQuantityTypeIdentifierFlightsClimbed", "Flights Climbed"),
   QUANTITY_HEART_RATE("HKQuantityTypeIdentifierHeartRate", "Heart Rate"),
   QUANTITY_STEP_COUNT("HKQuantityTypeIdentifierStepCount", "Steps Count"),
+  QUANTITY_VO2_MAX("HKQuantityTypeIdentifierVO2Max", "VO2 MAX"),
   
   QUANTITY_APPLE_EXERCISE_TIME("HKQuantityTypeIdentifierAppleExerciseTime", "Apple Exercise Time"),
   

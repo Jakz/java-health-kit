@@ -24,6 +24,21 @@ public class Filters
     return t -> t.timestamp().start.isAfter(timestamp.atZone(t.timestamp().start.getZone()));
   }
   
+  public static <T extends Timed> Predicate<T> isAtLeast(LocalDate timestamp)
+  {
+    return t -> t.timestamp().start.isAfter(timestamp.atStartOfDay(t.timestamp().start.getZone()));
+  }
+  
+  public static <T extends Timed> Predicate<T> isAfter(LocalDate timestamp)
+  {
+    return t -> t.timestamp().start.isAfter(timestamp.plusDays(1).atStartOfDay(t.timestamp().start.getZone()));
+  }
+  
+  public static <T extends Timed> Predicate<T> isBefore(LocalDate timestamp)
+  {
+    return t -> t.timestamp().start.isBefore(timestamp.atStartOfDay(t.timestamp().start.getZone()));
+  }
+  
   public static <T extends Timed> Predicate<T> isBefore(LocalDateTime timestamp)
   {
     return t -> t.timestamp().start.isBefore(timestamp.atZone(t.timestamp().start.getZone()));

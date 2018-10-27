@@ -100,16 +100,18 @@ public class App
       XMLParser<DataSet> parser = new XMLParser<>(new Parser());
       DataSet set = parser.load(mis);
       
-      Predicate<Sample> filter =           
-        Filters.and(
+      Predicate<Sample> filter = Filters.inDayRange(LocalDate.of(2017, 05, 01), LocalDate.of(2017, 06, 01));         
+      /*  Filters.and(
             Filters.ofType(SampleType.QUANTITY_HEART_RATE),
             Filters.onDay(LocalDate.of(2017, 10, 18))
 
-            /*Filters.and(
-                Filters.isAfter(LocalDateTime.of(2017, 11, 04, 15, 0, 0)),
-                Filters.isBefore(LocalDateTime.of(2017, 11, 18, 23, 59))
-            )*/
-        );
+        );*/
+        
+
+        /*Filters.and(
+            Filters.isAfter(LocalDateTime.of(2017, 11, 04, 15, 0, 0)),
+            Filters.isBefore(LocalDateTime.of(2017, 11, 18, 23, 59))
+        )*/
       
       DataSetPanel dataSetPanel = new DataSetPanel(set);
       dataSetPanel.filterSamples(filter);
@@ -117,6 +119,9 @@ public class App
       WrapperFrame<?> frame = UIUtils.buildFrame(dataSetPanel, "Sample Table");
       frame.exitOnClose();
       frame.setVisible(true);
+      
+      if (true)
+        return;
       
       //if (true)
       //  return;

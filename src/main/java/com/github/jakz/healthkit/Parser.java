@@ -321,7 +321,14 @@ public class Parser extends XMLHandler<DataSet>
   {
     String stringUnit = attrStringOptional(unitKey);
     if (stringUnit != null)
-      return StandardUnit.forKey(stringUnit).parseValue(attrString(valueKey));
+    {
+      StandardUnit unit = StandardUnit.forKey(stringUnit);
+      
+      if (unit == null)
+        throw new InvalidDataException("Unknown unit '"+stringUnit+"'");
+
+      return unit.parseValue(attrString(valueKey));
+    } 
     else
       return null;
   }

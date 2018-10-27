@@ -9,6 +9,7 @@ public interface Unit
     WEIGHT,
     ENERGY,
     AMOUNT,
+    OXYGEN,
     TIMED_AMOUNT,
   }
   
